@@ -38,6 +38,7 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
     res.end(data);
   });
-}).listen(PORT, () => {
+}).listen(PORT, '0.0.0.0', () => {
   console.log(`Serving http://localhost:${PORT}`);
+  console.log(`On network: http://192.168.1.94:${PORT}`);
 });

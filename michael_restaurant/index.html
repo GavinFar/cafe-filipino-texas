@@ -421,6 +421,8 @@
       flex-wrap: wrap;
       animation: fadeUp .7s .65s var(--ease-smooth) both;
     }
+    .hero-story-btn { display: none; }
+    @media (min-width: 768px) { .hero-story-btn { display: inline-flex; } }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(22px); }
@@ -961,8 +963,8 @@
     </p>
 
     <div class="hero-cta-row">
-      <a href="#order"  class="btn btn-gold" style="font-size:1.05rem; padding:16px 42px;">Order Online</a>
-      <a href="#about"  class="btn btn-outline-gold">Our Story</a>
+      <a href="#order"  class="btn btn-gold" id="heroOrderBtn" style="font-size:1.05rem; padding:16px 42px;">Order Online</a>
+      <a href="#about"  class="btn btn-outline-gold hero-story-btn">Our Story</a>
     </div>
   </div>
 
@@ -1254,17 +1256,27 @@
     reveals.forEach(function (el) { el.classList.add('vis'); });
   }
 
-  /* --- Hide sticky btn when order section is visible --- */
-  var orderSec   = document.getElementById('order');
-  var stickyBtn  = document.getElementById('stickyOrder');
+  /* --- Hide sticky btn when order section or hero CTA is visible --- */
+  var orderSec    = document.getElementById('order');
+  var heroBtn     = document.getElementById('heroOrderBtn');
+  var stickyBtn   = document.getElementById('stickyOrder');
+  var _visible    = {};
+  function _updateSticky() {
+    var hide = _visible['order'] || _visible['hero'];
+    stickyBtn.style.opacity       = hide ? '0' : '1';
+    stickyBtn.style.pointerEvents = hide ? 'none' : '';
+  }
   if (orderSec && stickyBtn) {
-    var oo = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        stickyBtn.style.opacity       = e.isIntersecting ? '0' : '1';
-        stickyBtn.style.pointerEvents = e.isIntersecting ? 'none' : '';
-      });
-    }, { threshold: 0.25 });
-    oo.observe(orderSec);
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { _visible['order'] = e.isIntersecting; });
+      _updateSticky();
+    }, { threshold: 0.25 }).observe(orderSec);
+  }
+  if (heroBtn && stickyBtn) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { _visible['hero'] = e.isIntersecting; });
+      _updateSticky();
+    }, { threshold: 0.1 }).observe(heroBtn);
   }
 })();
 </script>
